@@ -256,3 +256,7 @@ app_license = "mit"
 # List of apps whose translatable strings should be excluded from this app's translations.
 # ignore_translatable_strings_from = []
 
+
+# --- Compliance Tracker: installation ---------------------------------------
+after_install = "compliance_tracker.install.after_install"
+after_migrate = "compliance_tracker.install.after_migrate"
