@@ -1,15 +1,15 @@
 import frappe
+from frappe.modules.utils import sync_customizations
+from frappe.utils.nestedset import get_root_of
 
-ROLES = [
-	("Compliance Manager", 1),
-	("Compliance Staff", 1),
-	("Compliance Client", 0),  # portal only - no Desk access
-]
+ROLES = ["Compliance Manager", "Compliance Staff"]  # the portal uses ERPNext's standard "Customer" role
+
+ITEM_GROUP = "Statutory Services"
 
 # Default Sri Lankan statutory services. Due days / offsets are configurable
 # defaults and should be confirmed against the latest IRD / ROC notices.
-SERVICE_TYPES = [
-	# name, body, frequency, due_day, offset_months, critical, advisory
+SERVICES = [
+	# item name, statutory body, frequency, due_day, months_after_period_end, critical, penalty advisory
 	("VAT", "Inland Revenue Department (IRD)", "Monthly", 20, 1, 1,
 	 "Late VAT filing/payment may attract penalties (e.g. LKR 50,000 + 5% of unpaid tax) and interest of about 1.5% per month."),
 	("APIT", "Inland Revenue Department (IRD)", "Monthly", 15, 1, 1,
@@ -30,66 +30,61 @@ SERVICE_TYPES = [
 
 
 def after_install():
-	create_roles()
-	create_service_types()
-	init_settings()
-	frappe.db.commit()
+	# Frappe runs after_install BEFORE it syncs this app's custom fields,
+	# so sync them first: the service Items below use those fields.
+	sync_customizations("compliance_tracker")
+	setup()
 
 
 def after_migrate():
+	setup()
+
+
+def setup():
+	"""Idempotent: safe to run on every install and migrate."""
 	create_roles()
-	init_settings()
+	create_item_group()
+	create_service_items()
+	frappe.db.commit()
 
 
 def create_roles():
-	for role, desk in ROLES:
+	for role in ROLES:
 		if not frappe.db.exists("Role", role):
-			frappe.get_doc({"doctype": "Role", "role_name": role, "desk_access": desk}).insert(ignore_permissions=True)
-		else:
-			frappe.db.set_value("Role", role, "desk_access", desk)
+			frappe.get_doc({"doctype": "Role", "role_name": role, "desk_access": 1}).insert(ignore_permissions=True)
 
 
-def create_service_types():
-	for name, body, freq, day, offset, critical, advisory in SERVICE_TYPES:
-		if frappe.db.exists("Statutory Service", name):
-			continue
+def create_item_group():
+	if not frappe.db.exists("Item Group", ITEM_GROUP):
 		frappe.get_doc(
 			{
-				"doctype": "Statutory Service",
-				"service_name": name,
-				"statutory_body": body,
-				"default_frequency": freq,
-				"default_due_day": day,
-				"default_due_offset_months": offset,
-				"is_critical": critical,
-				"advisory_note": advisory,
+				"doctype": "Item Group",
+				"item_group_name": ITEM_GROUP,
+				"parent_item_group": get_root_of("Item Group"),
+				"is_group": 0,
 			}
 		).insert(ignore_permissions=True)
 
 
-def init_settings():
-	"""Fill default settings once (only if the settings DocType exists and was never configured)."""
-	if not frappe.db.exists("DocType", "Compliance Settings"):
-		return
-	# get_single() returns form defaults even before the first save, so check the database itself
-	if frappe.db.sql("select value from `tabSingles` where doctype='Compliance Settings' and field='firm_name' and value!=''"):
-		return  # already configured by an administrator - never overwrite
-	s = frappe.get_single("Compliance Settings")
-	defaults = {
-		"firm_name": "SmartAudit & Co.",
-		"generation_horizon_days": 45,
-		"fy_start_month": 4,
-		"enable_email_reminders": 1,
-		"reminder_schedule": "15,10,3",
-		"at_risk_days": 3,
-		"notify_staff": 1,
-		"overdue_repeat_days": 7,
-		"enable_sms": 1,
-		"sms_mode": "Mock (log only)",
-		"sms_threshold_days": 3,
-	}
-	for k, v in defaults.items():
-		if not s.get(k):
-			s.set(k, v)
-	s.flags.ignore_permissions = True
-	s.save()
+def create_service_items():
+	for name, body, freq, day, offset, critical, advisory in SERVICES:
+		if frappe.db.exists("Item", name):
+			continue  # never overwrite a rule the firm has changed
+		frappe.get_doc(
+			{
+				"doctype": "Item",
+				"item_code": name,
+				"item_name": name,
+				"item_group": ITEM_GROUP,
+				"stock_uom": "Nos",
+				"is_stock_item": 0,
+				"include_item_in_manufacturing": 0,
+				"description": f"{name} compliance service",
+				"custom_statutory_body": body,
+				"custom_filing_frequency": freq,
+				"custom_due_day": day,
+				"custom_months_after_period_end": offset,
+				"custom_critical_deadline": critical,
+				"custom_penalty_advisory": advisory,
+			}
+		).insert(ignore_permissions=True)
