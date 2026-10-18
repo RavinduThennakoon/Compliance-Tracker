@@ -89,7 +89,10 @@ def create_roles():
 	for role in ROLES:
 		if not frappe.db.exists("Role", role):
 			frappe.get_doc({"doctype": "Role", "role_name": role, "desk_access": 1}).insert(ignore_permissions=True)
-
+	# The client portal relies on ERPNext's "Customer" role being website-only (ERPNext's own
+	# installer intends desk_access = 0, but it is not always applied), so enforce it here.
+	if frappe.db.exists("Role", "Customer"):
+		frappe.db.set_value("Role", "Customer", "desk_access", 0)
 
 def create_item_group():
 	if not frappe.db.exists("Item Group", ITEM_GROUP):
