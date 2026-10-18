@@ -20,8 +20,8 @@ EMAIL_TEMPLATES = {
 		"subject": "{{ reminder_tier }}: {{ service }} for {{ period }} is due on {{ due_date }}",
 		"response": """<p>Dear {{ customer_name }},</p>
 <p>This is a reminder that your <b>{{ service }}</b> filing for <b>{{ period }}</b> is due on
-<b>{{ due_date }}</b>{% if days_left >= 0 %} ({{ days_left }} day(s) from today){% else %}
-and is now <b>{{ -days_left }} day(s) overdue</b>{% endif %}.</p>
+<b>{{ due_date }}</b>{% if is_overdue %} and is now <b>{{ days_overdue }} day(s) overdue</b>{% else %}
+({{ days_left }} day(s) from today){% endif %}.</p>
 <p>Please send us any outstanding documents so that we can file on time.</p>
 {% if penalty_advisory %}<p><i>{{ penalty_advisory }}</i></p>{% endif %}
 <p>Thank you,<br>{{ firm_name }}</p>""",
