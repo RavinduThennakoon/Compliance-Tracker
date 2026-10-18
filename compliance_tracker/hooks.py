@@ -61,6 +61,12 @@ doctype_list_js = {"Task": "public/js/task_list.js"}
 
 # application home page (will override Website Settings)
 # home_page = "login"
+# Client portal: menu entry and landing page for ERPNext's standard "Customer" role
+standard_portal_menu_items = [
+	{"title": "My Compliance", "route": "/my-compliance", "role": "Customer"},
+]
+role_home_page = {"Customer": "my-compliance"}
+
 
 # website user home page (by Role)
 # role_home_page = {

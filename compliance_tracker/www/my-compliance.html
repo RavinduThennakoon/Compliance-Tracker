@@ -1,0 +1,75 @@
+{% extends "templates/web.html" %}
+
+{% block title %}{{ _("My Compliance") }}{% endblock %}
+
+{% block page_content %}
+<style>
+	.ct-cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:12px; margin:16px 0 24px; }
+	.ct-card { border:1px solid var(--border-color,#e2e6e9); border-radius:10px; padding:14px; }
+	.ct-card .n { font-size:26px; font-weight:700; }
+	.ct-card .l { font-size:13px; color:#6b7280; }
+	.ct-red { color:#c0392b; } .ct-amber { color:#b7791f; } .ct-blue { color:#2b6cb0; }
+	.ct-table { width:100%; border-collapse:collapse; font-size:14px; margin-bottom:28px; }
+	.ct-table th, .ct-table td { padding:9px 10px; border-bottom:1px solid #edf0f2; text-align:left; vertical-align:top; }
+	.ct-table th { background:#f7f8fa; font-weight:600; }
+	.ct-pill { display:inline-block; padding:2px 10px; border-radius:999px; font-size:12px; font-weight:600; }
+	.p-overdue { background:#fde8e6; color:#c0392b; } .p-atrisk { background:#fdf3dc; color:#975a16; }
+	.p-ontrack { background:#e3f6ea; color:#2f855a; } .p-done { background:#e6effa; color:#2b6cb0; } .p-late { background:#fdf6d8; color:#8a6d00; }
+	.ct-note { font-size:12px; color:#975a16; }
+</style>
+
+<h2>{{ customer.customer_name }}</h2>
+<p class="text-muted">{{ customer.customer_type }}{% if customer.tax_id %} &middot; TIN {{ customer.tax_id }}{% endif %}</p>
+
+<div class="ct-cards">
+	<div class="ct-card"><div class="n">{{ counts.pending }}</div><div class="l">{{ _("Pending obligations") }}</div></div>
+	<div class="ct-card"><div class="n ct-red">{{ counts.overdue }}</div><div class="l">{{ _("Overdue") }}</div></div>
+	<div class="ct-card"><div class="n ct-amber">{{ counts.at_risk }}</div><div class="l">{{ _("At risk") }}</div></div>
+	<div class="ct-card"><div class="n ct-blue">{{ counts.filed }}</div><div class="l">{{ _("Filed") }}</div></div>
+</div>
+
+{% macro pill(s) -%}
+	{%- set cls = {"Overdue":"p-overdue","At Risk":"p-atrisk","On Track":"p-ontrack","Completed On Time":"p-done","Completed Late":"p-late"}.get(s, "p-ontrack") -%}
+	<span class="ct-pill {{ cls }}">{{ _(s) }}</span>
+{%- endmacro %}
+
+<h4>{{ _("Pending tax & statutory obligations") }}</h4>
+{% if pending %}
+<table class="ct-table">
+	<thead><tr><th>{{ _("Obligation") }}</th><th>{{ _("Period") }}</th><th>{{ _("Due date") }}</th><th>{{ _("Status") }}</th><th>{{ _("Progress") }}</th></tr></thead>
+	<tbody>
+	{% for o in pending %}
+		<tr>
+			<td><b>{{ o.custom_service }}</b>{% if o.advisory and o.custom_compliance_status in ("Overdue", "At Risk") %}<div class="ct-note">&#9888; {{ o.advisory }}</div>{% endif %}</td>
+			<td>{{ o.custom_period }}</td>
+			<td>{{ frappe.format_date(o.due_date) }}<br><small class="text-muted">
+				{% if o.days_to_due > 0 %}{{ _("in {0} days").format(o.days_to_due) }}{% elif o.days_to_due == 0 %}{{ _("today") }}{% else %}{{ _("{0} days overdue").format(-o.days_to_due) }}{% endif %}
+			</small></td>
+			<td>{{ pill(o.custom_compliance_status) }}</td>
+			<td>{{ _(o.status) }}</td>
+		</tr>
+	{% endfor %}
+	</tbody>
+</table>
+{% else %}
+<p class="text-muted">{{ _("Nothing pending. All obligations are up to date.") }}</p>
+{% endif %}
+
+<h4>{{ _("Filing history") }}</h4>
+{% if history %}
+<table class="ct-table">
+	<thead><tr><th>{{ _("Obligation") }}</th><th>{{ _("Period") }}</th><th>{{ _("Due date") }}</th><th>{{ _("Filed on") }}</th><th>{{ _("Reference") }}</th><th>{{ _("Result") }}</th></tr></thead>
+	<tbody>
+	{% for o in history %}
+		<tr>
+			<td>{{ o.custom_service }}</td><td>{{ o.custom_period }}</td>
+			<td>{{ frappe.format_date(o.due_date) }}</td><td>{{ frappe.format_date(o.completed_on) }}</td>
+			<td>{{ o.custom_filing_reference or "" }}</td><td>{{ pill(o.custom_compliance_status) }}</td>
+		</tr>
+	{% endfor %}
+	</tbody>
+</table>
+{% else %}
+<p class="text-muted">{{ _("No filings recorded yet.") }}</p>
+{% endif %}
+{% endblock %}
