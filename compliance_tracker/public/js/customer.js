@@ -5,6 +5,20 @@ frappe.ui.form.on("Customer", {
 			filters: { item_group: "Statutory Services", disabled: 0 },
 		}));
 	},
+	refresh(frm) {
+		if (frm.is_new() || !(frm.doc.custom_compliance_services || []).length) return;
+		frm.add_custom_button(__("Generate Obligations Now"), () => {
+			frappe.call({
+				method: "compliance_tracker.generation.generate_now",
+				args: { customer: frm.doc.name },
+				freeze: true,
+				callback: (r) => {
+					frappe.show_alert({ message: __("{0} obligation(s) created", [r.message]), indicator: "green" });
+					frappe.set_route("List", "Task", { custom_customer: frm.doc.name });
+				},
+			});
+		}, __("Compliance"));
+	},
 });
 
 frappe.ui.form.on("Customer Compliance Service", {

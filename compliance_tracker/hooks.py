@@ -44,7 +44,8 @@ required_apps = ["erpnext"]
 
 # include js in doctype views
 doctype_js = {"Customer": "public/js/customer.js",
- "Task": "public/js/task.js",}
+ "Task": "public/js/task.js",
+ "Projects Settings": "public/js/projects_settings.js",}
 doctype_list_js = {"Task": "public/js/task_list.js"}
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
@@ -159,6 +160,13 @@ doc_events = {
 		"validate": "compliance_tracker.events.task.validate",
 	},
 }
+scheduler_events = {
+	"cron": {
+		# every day at 07:00 in the system time zone (Asia/Colombo)
+		"0 7 * * *": ["compliance_tracker.scheduler.run_daily"],
+	},
+}
+
 # Scheduled Tasks
 # ---------------
 
