@@ -79,7 +79,14 @@ def get_context(task, tier):
 		# comparisons are done here, not in the template: Text Editor content escapes < and >
 		"is_overdue": days_left < 0,
 		"days_overdue": max(-days_left, 0),
-    }
+		"compliance_status": task.custom_compliance_status,
+		"reminder_tier": tier,
+		"penalty_advisory": frappe.db.get_value("Item", task.custom_service, "custom_penalty_advisory"),
+		"firm_name": task.company or frappe.defaults.get_global_default("company") or "",
+		"task": task.name,
+		"task_url": get_url_to_form("Task", task.name),
+	}
+
 
 def send_email(task, template_name, recipients, tier):
 	recipients = [r for r in recipients if r]
