@@ -150,6 +150,9 @@ doc_events = {
 	"Customer": {
 		"validate": "compliance_tracker.events.customer.validate",
 	},
+    "Projects Settings": {
+		"validate": "compliance_tracker.events.projects_settings.validate",
+	},
 }
 # Scheduled Tasks
 # ---------------
