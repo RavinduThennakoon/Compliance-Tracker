@@ -11,6 +11,34 @@ ROLES = ["Compliance Manager", "Compliance Staff"]  # the portal uses ERPNext's 
 ITEM_GROUP = "Statutory Services"
 TASK_TYPE = "Statutory Filing"
 
+CLIENT_TEMPLATE = "Compliance Reminder - Client"
+STAFF_TEMPLATE = "Compliance Reminder - Staff"
+
+# Default wording (Jinja). The firm can edit it later in Email Template; it is never overwritten.
+EMAIL_TEMPLATES = {
+	CLIENT_TEMPLATE: {
+		"subject": "{{ reminder_tier }}: {{ service }} for {{ period }} is due on {{ due_date }}",
+		"response": """<p>Dear {{ customer_name }},</p>
+<p>This is a reminder that your <b>{{ service }}</b> filing for <b>{{ period }}</b> is due on
+<b>{{ due_date }}</b>{% if days_left >= 0 %} ({{ days_left }} day(s) from today){% else %}
+and is now <b>{{ -days_left }} day(s) overdue</b>{% endif %}.</p>
+<p>Please send us any outstanding documents so that we can file on time.</p>
+{% if penalty_advisory %}<p><i>{{ penalty_advisory }}</i></p>{% endif %}
+<p>Thank you,<br>{{ firm_name }}</p>""",
+	},
+	STAFF_TEMPLATE: {
+		"subject": "[{{ compliance_status }}] {{ service }} - {{ period }} - {{ customer_name }} (due {{ due_date }})",
+		"response": """<p>{{ reminder_tier }} for <b>{{ customer_name }}</b>:</p>
+<ul>
+<li>Service: {{ service }} ({{ period }})</li>
+<li>Due date: {{ due_date }}</li>
+<li>Compliance status: <b>{{ compliance_status }}</b></li>
+<li>Task: <a href="{{ task_url }}">{{ task }}</a></li>
+</ul>
+<p>{{ firm_name }} - Compliance Tracker</p>""",
+	},
+}
+
 # Default Sri Lankan statutory services. Due days / offsets are configurable
 # defaults and should be confirmed against the latest IRD / ROC notices.
 SERVICES = [
@@ -51,6 +79,7 @@ def setup():
 	create_item_group()
 	create_service_items()
 	create_task_type()
+	create_email_templates()
 	create_custom_fields(CUSTOM_FIELDS)  # fields that cannot be made in Customize Form (Single DocTypes)
 	init_settings()
 	frappe.db.commit()
@@ -114,5 +143,16 @@ def init_settings():
 		)
 		if not saved:
 			frappe.db.set_single_value(SETTINGS_DOCTYPE, field, value)
+def create_email_templates():
+	for name, template in EMAIL_TEMPLATES.items():
+		if not frappe.db.exists("Email Template", name):
+			frappe.get_doc(
+				{
+					"doctype": "Email Template",
+					"name": name,  # Email Template is named by the user ("Prompt")
+					"subject": template["subject"],
+					"response": template["response"],
+				}
+			).insert(ignore_permissions=True)
 
 
