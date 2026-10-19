@@ -1,0 +1,23 @@
+{
+ "app": "compliance_tracker",
+ "docstatus": 0,
+ "doctype": "Workspace Sidebar",
+ "header_icon": "list-todo",
+ "items": [
+  {"type": "Link", "label": "Home", "link_type": "Workspace", "link_to": "Compliance Tracker", "icon": "home"},
+  {"type": "Link", "label": "Obligations", "link_type": "DocType", "link_to": "Task", "icon": "list-todo"},
+  {"type": "Link", "label": "Customers", "link_type": "DocType", "link_to": "Customer", "icon": "users"},
+  {"type": "Link", "label": "Compliance Status Report", "link_type": "Report", "link_to": "Compliance Status Report", "icon": "chart"},
+  {"type": "Section Break", "label": "Setup", "link_type": "DocType", "indent": 1, "keep_closed": 1, "icon": "database"},
+  {"type": "Link", "label": "Statutory Services", "link_type": "DocType", "link_to": "Item", "child": 1},
+  {"type": "Link", "label": "Compliance Settings", "link_type": "DocType", "link_to": "Projects Settings", "child": 1},
+  {"type": "Link", "label": "Email Template", "link_type": "DocType", "link_to": "Email Template", "child": 1},
+  {"type": "Link", "label": "Scheduled Job Log", "link_type": "DocType", "link_to": "Scheduled Job Log", "child": 1}
+ ],
+ "modified": "2026-10-19 09:00:00.000000",
+ "module": "Projects",
+ "name": "Compliance Tracker",
+ "owner": "Administrator",
+ "standard": 1,
+ "title": "Compliance Tracker"
+}

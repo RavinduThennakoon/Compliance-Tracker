@@ -1,0 +1,57 @@
+{
+ "app": "compliance_tracker",
+ "charts": [
+  {"chart_name": "Obligations by Compliance Status", "label": "Obligations by Compliance Status"},
+  {"chart_name": "Late Filings by Responsibility", "label": "Late Filings by Responsibility"}
+ ],
+ "content": "[{\"id\":\"ct-h1\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b>Compliance Overview</b></span>\",\"col\":12}},{\"id\":\"ct-n1\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Open Obligations\",\"col\":3}},{\"id\":\"ct-n2\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"At Risk Obligations\",\"col\":3}},{\"id\":\"ct-n3\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Overdue Obligations\",\"col\":3}},{\"id\":\"ct-n4\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Late Filings\",\"col\":3}},{\"id\":\"ct-c1\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Obligations by Compliance Status\",\"col\":6}},{\"id\":\"ct-c2\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Late Filings by Responsibility\",\"col\":6}},{\"id\":\"ct-h2\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b>Your Shortcuts</b></span>\",\"col\":12}},{\"id\":\"ct-s1\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Open Obligations\",\"col\":3}},{\"id\":\"ct-s2\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Compliance Status Report\",\"col\":3}},{\"id\":\"ct-s3\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Customers\",\"col\":3}},{\"id\":\"ct-s4\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Compliance Settings\",\"col\":3}}]",
+ "custom_blocks": [],
+ "docstatus": 0,
+ "doctype": "Workspace",
+ "for_user": "",
+ "hide_custom": 0,
+ "icon": "list-todo",
+ "is_hidden": 0,
+ "label": "Compliance Tracker",
+ "links": [],
+ "modified": "2026-10-19 08:00:00.000000",
+ "module": "Compliance Tracker",
+ "name": "Compliance Tracker",
+ "number_cards": [
+  {"label": "Open Obligations", "number_card_name": "Open Obligations"},
+  {"label": "At Risk Obligations", "number_card_name": "At Risk Obligations"},
+  {"label": "Overdue Obligations", "number_card_name": "Overdue Obligations"},
+  {"label": "Late Filings", "number_card_name": "Late Filings"}
+ ],
+ "owner": "Administrator",
+ "parent_page": "",
+ "public": 1,
+ "quick_lists": [],
+ "roles": [
+  {"role": "System Manager"},
+  {"role": "Compliance Manager"},
+  {"role": "Compliance Staff"}
+ ],
+ "sequence_id": 30.0,
+ "shortcuts": [
+  {
+   "label": "Open Obligations",
+   "type": "DocType",
+   "link_to": "Task",
+   "doc_view": "List",
+   "stats_filter": "{\"custom_customer\": [\"is\", \"set\"], \"status\": [\"not in\", [\"Completed\", \"Cancelled\"]]}",
+   "format": "{} Open",
+   "color": "Orange"
+  },
+  {
+   "label": "Compliance Status Report",
+   "type": "Report",
+   "link_to": "Compliance Status Report",
+   "report_ref_doctype": "Task"
+  },
+  {"label": "Customers", "type": "DocType", "link_to": "Customer", "doc_view": "List"},
+  {"label": "Compliance Settings", "type": "DocType", "link_to": "Projects Settings"}
+ ],
+ "title": "Compliance Tracker",
+ "type": "Workspace"
+}
