@@ -10,7 +10,7 @@
  "idx": 0,
  "is_standard": "Yes",
  "letter_head": null,
- "modified": "2026-10-19 04:30:25.517982",
+ "modified": "2026-10-19 18:28:32.904317",
  "modified_by": "Administrator",
  "module": "Compliance Tracker",
  "name": "Compliance Status Report",
@@ -20,15 +20,6 @@
  "report_name": "Compliance Status Report",
  "report_type": "Script Report",
  "roles": [
-  {
-   "role": "Projects User"
-  },
-  {
-   "role": "HR User"
-  },
-  {
-   "role": "HR Manager"
-  },
   {
    "role": "System Manager"
   },

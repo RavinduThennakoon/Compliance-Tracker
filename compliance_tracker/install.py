@@ -10,6 +10,8 @@ ROLES = ["Compliance Manager", "Compliance Staff"]  # the portal uses ERPNext's 
 
 ITEM_GROUP = "Statutory Services"
 TASK_TYPE = "Statutory Filing"
+DAILY_JOB = "compliance_tracker.scheduler.run_daily"
+
 
 CLIENT_TEMPLATE = "Compliance Reminder - Client"
 STAFF_TEMPLATE = "Compliance Reminder - Staff"
@@ -76,6 +78,7 @@ def after_migrate():
 def setup():
 	"""Idempotent: safe to run on every install and migrate."""
 	create_roles()
+	harden_portal()
 	create_item_group()
 	create_service_items()
 	create_task_type()
@@ -93,6 +96,21 @@ def create_roles():
 	# installer intends desk_access = 0, but it is not always applied), so enforce it here.
 	if frappe.db.exists("Role", "Customer"):
 		frappe.db.set_value("Role", "Customer", "desk_access", 0)
+
+def harden_portal():
+	"""Clients (ERPNext "Customer" role) must reach only the read-only /my-compliance page."""
+	# ERPNext intends the Customer role to be website-only (desk_access = 0), but it is not always applied
+	if frappe.db.exists("Role", "Customer"):
+		frappe.db.set_value("Role", "Customer", "desk_access", 0)
+	# ERPNext's standard "tasks" web form lets any logged-in website user create Tasks
+	if frappe.db.exists("Web Form", "tasks"):
+		frappe.db.set_value("Web Form", "tasks", "published", 0)
+
+
+def enable_job_log():
+	"""Keep a Scheduled Job Log entry for every run of the daily job, as evidence that it runs by itself."""
+	frappe.db.set_value("Scheduled Job Type", {"method": DAILY_JOB}, "create_log", 1)
+
 
 def create_item_group():
 	if not frappe.db.exists("Item Group", ITEM_GROUP):
