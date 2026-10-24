@@ -1,7 +1,7 @@
 """Daily compliance run: generate obligations, refresh the traffic lights, send reminders."""
 
 import frappe
-from frappe.utils import getdate, now_datetime, today
+from frappe.utils import get_time, getdate, now_datetime, today
 
 from compliance_tracker.engine import status as S
 from compliance_tracker.generation import generate_for_all_customers
@@ -28,6 +28,17 @@ def run_daily():
 	frappe.db.set_single_value(SETTINGS_DOCTYPE, "custom_last_run_summary", summary)
 	frappe.db.commit()
 	return summary
+
+def run_if_due():
+	"""Called every 15 minutes (hooks.py). Runs the daily job once a day, after the time set in Projects Settings."""
+	now = now_datetime()
+	last_run = frappe.db.get_single_value(SETTINGS_DOCTYPE, "custom_last_run_date")
+	if last_run and getdate(last_run) >= now.date():
+		return  # already ran today
+	if now.time() < get_time(get_settings().daily_run_time):
+		return  # not time yet
+	frappe.db.set_single_value(SETTINGS_DOCTYPE, "custom_last_run_date", now.date())
+	run_daily()
 
 
 @frappe.whitelist()

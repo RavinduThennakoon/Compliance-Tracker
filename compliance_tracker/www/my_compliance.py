@@ -22,6 +22,8 @@ FIELDS = [
 	"custom_compliance_status",
 	"completed_on",
 	"custom_filing_reference",
+	"custom_delay_responsibility",
+	"custom_delay_reason",
 ]
 
 
