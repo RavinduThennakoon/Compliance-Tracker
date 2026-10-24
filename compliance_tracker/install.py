@@ -10,7 +10,8 @@ ROLES = ["Compliance Manager", "Compliance Staff"]  # the portal uses ERPNext's 
 
 ITEM_GROUP = "Statutory Services"
 TASK_TYPE = "Statutory Filing"
-DAILY_JOB = "compliance_tracker.scheduler.run_daily"
+DAILY_JOB = "compliance_tracker.scheduler.run_if_due"
+
 
 
 CLIENT_TEMPLATE = "Compliance Reminder - Client"

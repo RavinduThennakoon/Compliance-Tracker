@@ -75,6 +75,24 @@ CUSTOM_FIELDS = {
 			"insert_after": "custom_enable_sms",
 			"module": MODULE,
 		},
+				{
+			"fieldname": "custom_daily_run_time",
+			"label": "Daily Run Time",
+			"fieldtype": "Time",
+			"default": "07:00:00",
+			"description": "The compliance engine runs once a day after this time (checked every 15 minutes)",
+			"insert_after": "custom_sms_threshold_days",
+			"module": MODULE,
+		},
+		{
+			"fieldname": "custom_last_run_date",
+			"label": "Last Run Date",
+			"fieldtype": "Date",
+			"read_only": 1,
+			"insert_after": "custom_daily_run_time",
+			"module": MODULE,
+		},
+
 		{
 			"fieldname": "custom_last_run_summary",
 			"label": "Last Run Summary",

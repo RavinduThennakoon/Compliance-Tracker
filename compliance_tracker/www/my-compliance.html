@@ -58,13 +58,20 @@
 <h4>{{ _("Filing history") }}</h4>
 {% if history %}
 <table class="ct-table">
-	<thead><tr><th>{{ _("Obligation") }}</th><th>{{ _("Period") }}</th><th>{{ _("Due date") }}</th><th>{{ _("Filed on") }}</th><th>{{ _("Reference") }}</th><th>{{ _("Result") }}</th></tr></thead>
+		<thead><tr><th>{{ _("Obligation") }}</th><th>{{ _("Period") }}</th><th>{{ _("Due date") }}</th><th>{{ _("Filed on") }}</th><th>{{ _("Reference") }}</th><th>{{ _("Result") }}</th><th>{{ _("Reason for delay") }}</th></tr></thead>
+
 	<tbody>
 	{% for o in history %}
 		<tr>
 			<td>{{ o.custom_service }}</td><td>{{ o.custom_period }}</td>
 			<td>{{ frappe.format_date(o.due_date) }}</td><td>{{ frappe.format_date(o.completed_on) }}</td>
 			<td>{{ o.custom_filing_reference or "" }}</td><td>{{ pill(o.custom_compliance_status) }}</td>
+						<td>{% if o.custom_compliance_status == "Completed Late" %}
+				<b>{{ {"Client": _("Caused by: Client"), "Firm": _("Caused by: Our firm"), "Third Party": _("Caused by: Third party")}.get(o.custom_delay_responsibility, "") }}</b><br>
+				<small>{{ o.custom_delay_reason or "" }}</small>
+			{% endif %}</td>
+
+
 		</tr>
 	{% endfor %}
 	</tbody>

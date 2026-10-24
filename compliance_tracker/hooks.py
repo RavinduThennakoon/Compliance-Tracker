@@ -169,10 +169,11 @@ doc_events = {
 }
 scheduler_events = {
 	"cron": {
-		# every day at 07:00 in the system time zone (Asia/Colombo)
-		"0 7 * * *": ["compliance_tracker.scheduler.run_daily"],
+		# every 15 minutes; runs the compliance engine once a day after Projects Settings > Daily Run Time
+		"*/15 * * * *": ["compliance_tracker.scheduler.run_if_due"],
 	},
 }
+
 
 # Scheduled Tasks
 # ---------------

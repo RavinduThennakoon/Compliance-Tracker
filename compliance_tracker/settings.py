@@ -15,6 +15,8 @@ DEFAULTS = {
 	"custom_overdue_repeat_days": 7,
 	"custom_enable_sms": 0,
 	"custom_sms_threshold_days": 3,
+	"custom_daily_run_time": "07:00:00",
+
 }
 
 
@@ -33,4 +35,6 @@ def get_settings():
 		overdue_repeat_days=number("custom_overdue_repeat_days"),
 		enable_sms=number("custom_enable_sms"),
 		sms_threshold_days=number("custom_sms_threshold_days"),
+		daily_run_time=s.get("custom_daily_run_time") or DEFAULTS["custom_daily_run_time"],
+
 	)
